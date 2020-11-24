@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmscriptenExporter = void 0;
 const Exporter_1 = require("./Exporter");
+const Project_1 = require("../Project");
 const Options_1 = require("../Options");
 const GraphicsApi_1 = require("../GraphicsApi");
 const fs = require("fs-extra");
@@ -102,7 +103,7 @@ class EmscriptenExporter extends Exporter_1.Exporter {
         defline += '-D KORE_DEBUGDIR="\\"' + debugDirName + '\\""' + ' ';
         this.p('DEF=' + defline);
         this.p();
-        let cline = '-std=c99 ';
+        let cline = '-std=gnu99 ';
         if (options.dynlib) {
             cline += '-fPIC ';
         }
@@ -126,7 +127,7 @@ class EmscriptenExporter extends Exporter_1.Exporter {
         this.p('CPPFLAGS=' + cppline);
         let optimization = '';
         if (!options.debug)
-            optimization = '-O2';
+            optimization = '-Os --closure 1 --pre-js ' + Project_1.Project.koreDir + '\\Sources\\html5\\backend.js';
         else
             optimization = '-g';
         if (options.lib) {
@@ -139,7 +140,7 @@ class EmscriptenExporter extends Exporter_1.Exporter {
             this.p('index.html' + ': ' + gchfilelist + ofilelist);
         }
         // let linkerFlags = '-s TOTAL_MEMORY=134217728 ';
-        let linkerFlags = '-fno-rtti -s TOTAL_MEMORY=134217728 -s ALLOW_MEMORY_GROWTH=1 ';
+        let linkerFlags = '-flto -fno-rtti -s ENVIRONMENT=web -s TOTAL_MEMORY=134217728 -s ALLOW_MEMORY_GROWTH=1 ';
         if (Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.WebGPU) {
             linkerFlags += '-s USE_WEBGPU=1 ';
         }
