@@ -127,7 +127,7 @@ class EmscriptenExporter extends Exporter_1.Exporter {
         this.p('CPPFLAGS=' + cppline);
         let optimization = '';
         if (!options.debug)
-            optimization = '-O2 ';
+            optimization = '-O2 -flto ';
         else
             optimization = '-g';
         if (options.lib) {
@@ -140,7 +140,8 @@ class EmscriptenExporter extends Exporter_1.Exporter {
             this.p('index.html' + ': ' + gchfilelist + ofilelist);
         }
         // let linkerFlags = '-s TOTAL_MEMORY=134217728 ';
-        let linkerFlags = '--closure 0 --pre-js ' + Project_1.Project.koreDir + '\\Sources\\html5\\backend.js -flto -fno-rtti -s ENVIRONMENT=web -s TOTAL_MEMORY=134217728 -s ALLOW_MEMORY_GROWTH=1 ';
+        let prepend = '--pre-js ' + Project_1.Project.koreDir + '\\Sources\\html5\\Backend.js --pre-js ' + Project_1.Project.koreDir + '\\Sources\\html5\\Webgl.js ';
+        let linkerFlags = '--closure 0 ' + prepend + ' -fno-rtti -s WASM_BIGINT -s ENVIRONMENT=web -s TOTAL_MEMORY=134217728 -s ALLOW_MEMORY_GROWTH=1 ';
         if (Options_1.Options.graphicsApi === GraphicsApi_1.GraphicsApi.WebGPU) {
             linkerFlags += '-s USE_WEBGPU=1 ';
         }
